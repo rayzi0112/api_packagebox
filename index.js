@@ -16,6 +16,8 @@ app.get("/", (req, res) => {
 });
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api", require("./routes/boxRoutes"));
+const fcmTokenRoutes = require("./routes/fcmTokenRoutes");
+app.use("/api", fcmTokenRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
