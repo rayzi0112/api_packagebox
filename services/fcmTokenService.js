@@ -1,26 +1,36 @@
-const { db } = require("../firebase/firebase");
+const { db, messaging } = require("../firebase/firebase");
 
-async function registerFcmToken({ userId, token }) {
-    const tokenRef = db.ref("fcm_tokens");
-
-    // Store token with userId as key
-    await tokenRef.child(userId).set({
+async function registerFcmToken({ token }) {
+    const tokenRef = db.ref("fcm_tokens").push();
+    await tokenRef.set({
         token: token,
         updatedAt: new Date().toISOString()
     });
-
-    return { userId, token };
+    return { token };
 }
 
-async function getFcmToken(userId) {
+async function testSingleToken(token, title, body) {
+    const message = {
+        token: token,
+        notification: {
+            title: title,
+            body: body
+        }
+    };
+
+    const response = await messaging.send(message);
+    return { messageId: response };
+}
+
+async function getFcmToken() {
     const tokenRef = db.ref("fcm_tokens");
-    const snapshot = await tokenRef.child(userId).once("value");
-
+    const snapshot = await tokenRef.once("value");
+    
     if (!snapshot.exists()) {
-        throw new Error("FCM token not found for user");
+        throw new Error("No FCM tokens found");
     }
-
+    
     return snapshot.val();
 }
 
-module.exports = { registerFcmToken, getFcmToken };
+module.exports = { registerFcmToken, getFcmToken, testSingleToken };

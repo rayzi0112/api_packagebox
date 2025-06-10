@@ -2,23 +2,22 @@ const { registerFcmToken, getFcmToken, testSingleToken } = require("../services/
 
 exports.registerToken = async (req, res) => {
     try {
-        const { userId, token, skipTest } = req.body;
+        const { token, skipTest } = req.body;
 
-        if (!userId || !token) {
+        if (!token) {
             return res.status(400).json({
                 success: false,
-                message: "User ID dan FCM token wajib diisi"
+                message: "FCM token wajib diisi"
             });
         }
 
         // Register token first
-        const result = await registerFcmToken({ userId, token });
+        const result = await registerFcmToken({ token });
 
         // Skip test if requested
         if (skipTest) {
             return res.status(201).json({ 
                 success: true, 
-                data: result,
                 message: 'Token registered successfully'
             });
         }
@@ -33,14 +32,12 @@ exports.registerToken = async (req, res) => {
             
             res.status(201).json({ 
                 success: true, 
-                data: result,
                 message: 'Token registered and tested successfully',
                 testMessageId: testResult.messageId
             });
         } catch (testError) {
             res.status(201).json({ 
                 success: true, 
-                data: result,
                 message: 'Token registered but test failed',
                 testError: testError.message
             });
@@ -52,8 +49,7 @@ exports.registerToken = async (req, res) => {
 
 exports.getToken = async (req, res) => {
     try {
-        const { userId } = req.params;
-        const token = await getFcmToken(userId);
+        const token = await getFcmToken();
         res.json({ success: true, data: token });
     } catch (err) {
         res.status(404).json({ success: false, message: err.message });
