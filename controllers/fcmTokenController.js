@@ -26,8 +26,8 @@ exports.registerToken = async (req, res) => {
         try {
             const testResult = await testSingleToken(
                 token, 
-                'Welcome!', 
-                'Your notifications are now active'
+                'Welcome to SmartBox', 
+                'Notifikasi anda berhasil aktif'
             );
             
             res.status(201).json({ 
