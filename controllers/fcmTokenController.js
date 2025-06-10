@@ -3,7 +3,7 @@ const { registerFcmToken, getFcmToken, testSingleToken } = require("../services/
 exports.registerToken = async (req, res) => {
     try {
         const { token, skipTest } = req.body;
-
+        console.log('Registering token:', token);
         if (!token) {
             return res.status(400).json({
                 success: false,

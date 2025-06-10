@@ -9,17 +9,48 @@ async function registerFcmToken({ token }) {
     return { token };
 }
 
-async function testSingleToken(token, title, body) {
-    const message = {
-        token: token,
-        notification: {
-            title: title,
-            body: body
-        }
-    };
+async function testSingleToken(token, title = 'Test', body = 'Test notification') {
+    try {
+        const message = {
+            token: token,
+            notification: {
+                title: title,
+                body: body
+            },
+            data: {
+                type: 'welcome',
+                click_action: 'FLUTTER_NOTIFICATION_CLICK',
+                id: Date.now().toString(),
+                timestamp: new Date().toISOString()
+            },
+            android: {
+                notification: {
+                    priority: 'high',
+                    channel_id: 'packagebox_channel',
+                    sound: 'default'
+                },
+                priority: 'high'
+            },
+            apns: {
+                payload: {
+                    aps: {
+                        alert: {
+                            title: title,
+                            body: body
+                        },
+                        sound: 'default'
+                    }
+                }
+            }
+        };
 
-    const response = await messaging.send(message);
-    return { messageId: response };
+        const response = await messaging.send(message);
+        console.log('Test notification sent successfully:', response);
+        return { success: true, messageId: response };
+    } catch (error) {
+        console.error('Test notification failed:', error);
+        return { success: false, error: error.message };
+    }
 }
 
 async function getFcmToken() {
