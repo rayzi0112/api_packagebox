@@ -3,6 +3,6 @@ const router = express.Router();
 const { registerToken, getToken } = require("../controllers/fcmTokenController");
 
 router.post("/fcm-tokens", registerToken);
-router.get("/fcm-tokens/:userId", getToken);
+router.get("/fcm-tokens/token", getToken);
 
 module.exports = router;
