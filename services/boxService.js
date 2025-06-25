@@ -1,18 +1,18 @@
-const { db, messaging } = require("../firebase/firebase");
+const { db } = require("../firebase/firebase");
+const { sendNotificationToAllDevices } = require("../services/FcmTokenService"); // Tambahkan ini
 
 async function addBoxMasuk(data) {
   const boxRef = db.ref("boxes_masuk").push();
   await boxRef.set({ ...data, type: "masuk" });
 
-  // Notifikasi paket masuk
-  const message = {
-    notification: {
-      title: "Paket Masuk",
-      body: `Box baru: ${data.name}`,
-    },
-    topic: "box_masuk",
-  };
-  await messaging.send(message);
+  // Kirim notifikasi ke semua device
+  await sendNotificationToAllDevices(
+    "Paket Masuk",
+    `Box baru: ${data.name}`,
+    null,
+    "masuk"
+  );
+
   return { id: boxRef.key, ...data, type: "masuk" };
 }
 
@@ -20,15 +20,14 @@ async function addBoxGetar(data) {
   const boxRef = db.ref("boxes_getar").push();
   await boxRef.set({ ...data, type: "getar" });
 
-  // Notifikasi paket bergetar
-  const message = {
-    notification: {
-      title: "Paket Bergetar",
-      body: `Box bergetar: ${data.name}`,
-    },
-    topic: "box_getar",
-  };
-  await messaging.send(message);
+  // Kirim notifikasi ke semua device
+  await sendNotificationToAllDevices(
+    "Paket Bergetar",
+    `Box bergetar: ${data.name}`,
+    null,
+    "getar"
+  );
+
   return { id: boxRef.key, ...data, type: "getar" };
 }
 
