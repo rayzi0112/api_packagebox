@@ -56,11 +56,11 @@ async function testSingleToken(token, title = 'Test', body = 'Test notification'
 async function getFcmToken() {
     const tokenRef = db.ref("fcm_tokens");
     const snapshot = await tokenRef.once("value");
-    
+
     if (!snapshot.exists()) {
         throw new Error("No FCM tokens found");
     }
-    
+
     return snapshot.val();
 }
 
@@ -90,14 +90,11 @@ async function sendNotificationToAllDevices(title, body, type) {
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
                 id: Date.now().toString(),
                 timestamp: new Date().toISOString()
-            }
-        };
-
-        // Kirim notifikasi ke semua token
-        const response = await messaging.sendMulticast({
-            ...message,
+            },
             tokens: validTokens
-        });
+        };
+        const response = await admin.messaging().sendMulticast(message);
+        console.log('FCM response:', response);
 
         console.log('Notification send completed:', response);
 
@@ -113,9 +110,9 @@ async function sendNotificationToAllDevices(title, body, type) {
     }
 }
 
-module.exports = { 
-    registerFcmToken, 
-    getFcmToken, 
+module.exports = {
+    registerFcmToken,
+    getFcmToken,
     testSingleToken,
     sendNotificationToAllDevices // Export fungsi baru
 };
