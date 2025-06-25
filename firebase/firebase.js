@@ -20,4 +20,4 @@ admin.initializeApp({
 const db = getDatabase();
 const messaging = admin.messaging();
 
-module.exports = { db, messaging };
+module.exports = { db, messaging, admin };

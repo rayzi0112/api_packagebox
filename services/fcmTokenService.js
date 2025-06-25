@@ -1,4 +1,4 @@
-const { db, messaging } = require("../firebase/firebase");
+const { db, messaging , admin} = require("../firebase/firebase");
 
 async function registerFcmToken({ token }) {
     const tokenRef = db.ref("fcm_tokens").push();
