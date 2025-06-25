@@ -1,5 +1,5 @@
 const { db } = require("../firebase/firebase");
-const { sendNotificationToAllDevices } = require("../services/FcmTokenService"); // Tambahkan ini
+const { sendNotificationToAllDevices } = require("../services/fcmTokenService"); // Tambahkan ini
 
 async function addBoxMasuk(data) {
   const boxRef = db.ref("boxes_masuk").push();
