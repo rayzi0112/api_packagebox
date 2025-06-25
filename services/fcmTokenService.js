@@ -93,7 +93,7 @@ async function sendNotificationToAllDevices(title, body, type) {
                 body: body
             },
             data: {
-                type: type,
+                type: String(type),
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
                 id: Date.now().toString(),
                 timestamp: new Date().toISOString()
