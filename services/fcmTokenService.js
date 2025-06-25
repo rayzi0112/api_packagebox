@@ -66,8 +66,6 @@ async function getFcmToken() {
 
 async function sendNotificationToAllDevices(title, body, type) {
     try {
-        console.log('Starting notification send process...');
-        
         const snapshot = await db.ref('fcm_tokens').once('value');
         const validTokens = [];
 
@@ -79,11 +77,8 @@ async function sendNotificationToAllDevices(title, body, type) {
         });
 
         if (validTokens.length === 0) {
-            console.log('No valid device tokens available');
             return { success: false, message: 'No device tokens available' };
         }
-
-        console.log(`Found ${validTokens.length} valid tokens`);
 
         const message = {
             notification: {
@@ -95,36 +90,23 @@ async function sendNotificationToAllDevices(title, body, type) {
                 click_action: 'FLUTTER_NOTIFICATION_CLICK',
                 id: Date.now().toString(),
                 timestamp: new Date().toISOString()
-            },
-            android: {
-                notification: {
-                    priority: 'high',
-                    channel_id: 'packagebox_channel',
-                    sound: 'default'
-                },
-                priority: 'high',
-                ttl: 3600000
-            },
-            apns: {
-                payload: {
-                    aps: {
-                        alert: {
-                            title: title,
-                            body: body
-                        },
-                        sound: 'default',
-                        badge: 1,
-                        'mutable-content': 1,
-                        'content-available': 1
-                    }
-                }
             }
         };
 
-        // Batch sending logic here (see previous example)
-        // ...
+        // Kirim notifikasi ke semua token
+        const response = await messaging.sendMulticast({
+            ...message,
+            tokens: validTokens
+        });
 
-        return { success: true, sent: validTokens.length };
+        console.log('Notification send completed:', response);
+
+        return {
+            success: response.successCount > 0,
+            sent: response.successCount,
+            failed: response.failureCount,
+            responses: response.responses
+        };
     } catch (error) {
         console.error('Error in sendNotificationToAllDevices:', error);
         throw error;
