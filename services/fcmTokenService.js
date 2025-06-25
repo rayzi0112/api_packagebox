@@ -137,5 +137,3 @@ module.exports = {
     testSingleToken,
     sendNotificationToAllDevices // Export fungsi baru
 };
-
-await sendNotificationToAllDevices("Paket Masuk", `Box baru: ${data.name}`, "masuk");
