@@ -43,4 +43,21 @@ async function getAllBoxesByType(type) {
   return boxes;
 }
 
-module.exports = { addBoxMasuk, addBoxGetar, getAllBoxesByType };
+async function getAllBoxes() {
+  const [masukSnap, getarSnap] = await Promise.all([
+    db.ref("boxes_masuk").once("value"),
+    db.ref("boxes_getar").once("value"),
+  ]);
+  const boxes = [];
+
+  masukSnap.forEach((child) => {
+    boxes.push({ id: child.key, ...child.val() });
+  });
+  getarSnap.forEach((child) => {
+    boxes.push({ id: child.key, ...child.val() });
+  });
+
+  return boxes;
+}
+
+module.exports = { addBoxMasuk, addBoxGetar, getAllBoxesByType, getAllBoxes };

@@ -1,4 +1,4 @@
-const { addBoxMasuk, addBoxGetar, getAllBoxesByType } = require("../services/boxService");
+const { addBoxMasuk, addBoxGetar, getAllBoxes } = require("../services/boxService");
 
 exports.createBox = async (req, res) => {
   try {
@@ -19,11 +19,7 @@ exports.createBox = async (req, res) => {
 
 exports.getBoxes = async (req, res) => {
   try {
-    const { type } = req.query;
-    if (!type || (type !== "masuk" && type !== "getar")) {
-      return res.status(400).json({ success: false, message: "Query type harus 'masuk' atau 'getar'." });
-    }
-    const boxes = await getAllBoxesByType(type);
+    const boxes = await getAllBoxes();
     res.json({ success: true, boxes });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
