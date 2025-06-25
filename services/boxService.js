@@ -7,7 +7,7 @@ async function addBoxMasuk(data) {
 
   // Kirim notifikasi ke semua device
   await sendNotificationToAllDevices(
-    "Paket Masuk",
+    "Notifikasi Paket Masuk",
     `Paket Baru Masuk`,
     null,
     "masuk"
@@ -22,7 +22,7 @@ async function addBoxGetar(data) {
 
   // Kirim notifikasi ke semua device
   await sendNotificationToAllDevices(
-    "Box Bergetar",
+    "Notifikasi Box Dibobol",
     `Box Anda Dibobol`,
     null,
     "getar"
