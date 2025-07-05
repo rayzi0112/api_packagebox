@@ -4,7 +4,6 @@ const { sendNotificationToAllDevices } = require("../services/fcmTokenService");
 async function addBoxMasuk(data) {  
   const boxRef = db.ref("boxes_masuk").push();
   await boxRef.set({ ...data, type: "masuk" });
-
   // Kirim notifikasi ke semua device
   await sendNotificationToAllDevices(
     "Notifikasi Paket Masuk",
@@ -12,14 +11,12 @@ async function addBoxMasuk(data) {
     null,
     "masuk"
   );
-
   return { id: boxRef.key, ...data, type: "masuk" };
 }
 
 async function addBoxGetar(data) {
   const boxRef = db.ref("boxes_getar").push();
   await boxRef.set({ ...data, type: "getar" });
-
   // Kirim notifikasi ke semua device
   await sendNotificationToAllDevices(
     "Notifikasi Box Dibobol",
@@ -27,7 +24,6 @@ async function addBoxGetar(data) {
     null,
     "getar"
   );
-
   return { id: boxRef.key, ...data, type: "getar" };
 }
 
@@ -39,7 +35,8 @@ async function getAllBoxesByType(type) {
   snapshot.forEach((child) => {
     boxes.push({ id: child.key, ...child.val() });
   });
-  return boxes;
+  // Reverse array supaya data terbaru di atas
+  return boxes.reverse();
 }
 
 async function getAllBoxes() {
@@ -48,15 +45,14 @@ async function getAllBoxes() {
     db.ref("boxes_getar").once("value"),
   ]);
   const boxes = [];
-
   masukSnap.forEach((child) => {
     boxes.push({ id: child.key, ...child.val() });
   });
   getarSnap.forEach((child) => {
     boxes.push({ id: child.key, ...child.val() });
   });
-
-  return boxes;
+  // Reverse array supaya data terbaru di atas
+  return boxes.reverse();
 }
 
 module.exports = { addBoxMasuk, addBoxGetar, getAllBoxesByType, getAllBoxes };
