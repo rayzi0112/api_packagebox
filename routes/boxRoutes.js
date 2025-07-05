@@ -6,7 +6,7 @@ const { deleteAllBoxes } = require("../services/boxService");
 router.post("/boxes", createBox);
 router.get("/boxes", getBoxes);
 
-router.delete("/boxes", async (req, res) => {
+router.delete("/deleteboxes", async (req, res) => {
     try {
         await deleteAllBoxes();
         res.json({ success: true, message: "Semua data box berhasil dihapus." });
