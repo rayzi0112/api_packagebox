@@ -1,5 +1,5 @@
 const { db } = require("../firebase/firebase");
-const { sendNotificationToAllDevices } = require("../services/fcmTokenService"); // Tambahkan ini
+const { sendNotificationToAllDevices } = require("../services/fcmTokenService");
 
 async function addBoxMasuk(data) {  
   const boxRef = db.ref("boxes_masuk").push();
@@ -35,8 +35,9 @@ async function getAllBoxesByType(type) {
   snapshot.forEach((child) => {
     boxes.push({ id: child.key, ...child.val() });
   });
-  // Reverse array supaya data terbaru di atas
-  return boxes.reverse();
+  // Sort berdasarkan Firebase key secara descending (terbaru di atas)
+  boxes.sort((a, b) => b.id.localeCompare(a.id));
+  return boxes;
 }
 
 async function getAllBoxes() {
@@ -51,8 +52,10 @@ async function getAllBoxes() {
   getarSnap.forEach((child) => {
     boxes.push({ id: child.key, ...child.val() });
   });
-  // Reverse array supaya data terbaru di atas
-  return boxes.reverse();
+  // Sort berdasarkan Firebase key (yang berisi timestamp) secara descending
+  // sehingga data terbaru di atas
+  boxes.sort((a, b) => b.id.localeCompare(a.id));
+  return boxes;
 }
 
 module.exports = { addBoxMasuk, addBoxGetar, getAllBoxesByType, getAllBoxes };
