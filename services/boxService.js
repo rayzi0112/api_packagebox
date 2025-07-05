@@ -58,4 +58,11 @@ async function getAllBoxes() {
   return boxes;
 }
 
-module.exports = { addBoxMasuk, addBoxGetar, getAllBoxesByType, getAllBoxes };
+
+async function deleteAllBoxes() {
+  await db.ref("boxes_masuk").remove();
+  await db.ref("boxes_getar").remove();
+}
+
+
+module.exports = { addBoxMasuk, addBoxGetar, getAllBoxesByType, getAllBoxes,deleteAllBoxes };
