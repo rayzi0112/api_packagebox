@@ -2,8 +2,9 @@ const { db } = require("../firebase/firebase");
 const { sendNotificationToAllDevices } = require("./fcmTokenService");
 
 async function addBox(data, type) {
+  const timestamp = new Date().toISOString(); // format ISO: 2025-07-10T13:50:00.000Z
   const boxRef = db.ref("boxes").push();
-  await boxRef.set({ ...data, type });
+  await boxRef.set({ ...data, type, timestamp });
 
   if (type === "masuk") {
     await sendNotificationToAllDevices(
@@ -21,8 +22,9 @@ async function addBox(data, type) {
     );
   }
 
-  return { id: boxRef.key, ...data, type };
+  return { id: boxRef.key, ...data, type, timestamp };
 }
+
 
 async function getAllBoxes() {
   const snapshot = await db.ref("boxes").once("value");
