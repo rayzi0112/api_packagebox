@@ -1,68 +1,59 @@
 const { db } = require("../firebase/firebase");
-const { sendNotificationToAllDevices } = require("../services/fcmTokenService");
+const { sendNotificationToAllDevices } = require("./fcmTokenService");
 
-async function addBoxMasuk(data) {  
-  const boxRef = db.ref("boxes_masuk").push();
-  await boxRef.set({ ...data, type: "masuk" });
-  // Kirim notifikasi ke semua device
-  await sendNotificationToAllDevices(
-    "Notifikasi Paket Masuk",
-    `Silakan ambil paket Anda`,
-    null,
-    "masuk"
-  );
-  return { id: boxRef.key, ...data, type: "masuk" };
+async function addBox(data, type) {
+  const boxRef = db.ref("boxes").push();
+  await boxRef.set({ ...data, type });
+
+  if (type === "masuk") {
+    await sendNotificationToAllDevices(
+      "Notifikasi Paket Masuk",
+      "Silakan ambil paket Anda",
+      null,
+      "masuk"
+    );
+  } else if (type === "getar") {
+    await sendNotificationToAllDevices(
+      "Notifikasi Box Dibobol",
+      "Box Anda Dibobol! Silakan cek segera",
+      null,
+      "getar"
+    );
+  }
+
+  return { id: boxRef.key, ...data, type };
 }
 
-async function addBoxGetar(data) {
-  const boxRef = db.ref("boxes_getar").push();
-  await boxRef.set({ ...data, type: "getar" });
-  // Kirim notifikasi ke semua device
-  await sendNotificationToAllDevices(
-    "Notifikasi Box Dibobol",
-    `Box Anda Dibobol! Silakan cek segera`,
-    null,
-    "getar"
-  );
-  return { id: boxRef.key, ...data, type: "getar" };
-}
-
-async function getAllBoxesByType(type) {
-  let ref = "boxes_masuk";
-  if (type === "getar") ref = "boxes_getar";
-  const snapshot = await db.ref(ref).once("value");
+async function getAllBoxes() {
+  const snapshot = await db.ref("boxes").once("value");
   const boxes = [];
   snapshot.forEach((child) => {
     boxes.push({ id: child.key, ...child.val() });
   });
-  // Sort berdasarkan Firebase key secara descending (terbaru di atas)
   boxes.sort((a, b) => b.id.localeCompare(a.id));
   return boxes;
 }
 
-async function getAllBoxes() {
-  const [masukSnap, getarSnap] = await Promise.all([
-    db.ref("boxes_masuk").once("value"),
-    db.ref("boxes_getar").once("value"),
-  ]);
+async function getAllBoxesByType(type) {
+  const snapshot = await db.ref("boxes").once("value");
   const boxes = [];
-  masukSnap.forEach((child) => {
-    boxes.push({ id: child.key, ...child.val() });
+  snapshot.forEach((child) => {
+    const box = child.val();
+    if (box.type === type) {
+      boxes.push({ id: child.key, ...box });
+    }
   });
-  getarSnap.forEach((child) => {
-    boxes.push({ id: child.key, ...child.val() });
-  });
-  // Sort berdasarkan Firebase key (yang berisi timestamp) secara descending
-  // sehingga data terbaru di atas
   boxes.sort((a, b) => b.id.localeCompare(a.id));
   return boxes;
 }
-
 
 async function deleteAllBoxes() {
-  await db.ref("boxes_masuk").remove();
-  await db.ref("boxes_getar").remove();
+  await db.ref("boxes").remove();
 }
 
-
-module.exports = { addBoxMasuk, addBoxGetar, getAllBoxesByType, getAllBoxes,deleteAllBoxes };
+module.exports = {
+  addBox,
+  getAllBoxes,
+  getAllBoxesByType,
+  deleteAllBoxes
+};
