@@ -1,6 +1,6 @@
 const { registerUser, loginUser } = require("../services/authService");
 
-exports.register = async (req, res) => {
+register = async (req, res) => {
   try {
     const { username, password, email } = req.body;
     if (!username || !password || !email) {
